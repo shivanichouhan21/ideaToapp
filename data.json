@@ -1,0 +1,30 @@
+//without any feature add
+
+{
+   "temp_id": 1000,
+   "totalHour": 488,
+   "installment": 713.8571428571429,
+   "totalPrice": 9994,
+   "totalWeek": 14
+}
+//after applying feature
+{
+   "temp_id": 1000,
+   "totalHour": 541,
+   "installment": 1640.357142857143,
+   "totalPrice": 11847,
+   "totalWeek": 16,
+   "feature_id": ["601"]
+}
+
+//after applying 2 plateform
+
+"features_ids":["601"],
+{
+   "temp_id": 1000,
+   "totalHour": 732,
+   "installment": 789,
+   "totalPrice": 14991,
+   "totalWeek": 19,
+   "platform_id": ["1", "2"]
+}
