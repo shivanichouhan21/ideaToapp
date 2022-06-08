@@ -185,123 +185,123 @@ let featureData = async (id, feature_id, callback) => {
     })
 }
 
-// exports.i2p_templates = (req, res) => {
-//     let id = req.body.temp_id;
-//     let feature_id = req.body.features_ids
-//     let platformId = req.body.plateform_ids
-//     let couponCode = req.body.coupon_code
-//     let client_id = req.body.client_id
-//     let currency_id = req.body.currency_id
-//     console.log(req.body, "query");
-//     const query = `SELECT *
-//     FROM i2p_templates 
-//     INNER JOIN template_features ON i2p_templates.temp_id = template_features.tf_template_id
-//     INNER JOIN features ON template_features.tf_feature_id = features.feature_id
-//     where temp_id=${id}`;
-//     let featureCheck = false
-//     let platformCheck = false
-//     let respObj = { temp_id: id }
-//     db.query(query, async function (err, result) {
-//         if (err) {
-//             res.json({
-//                 code: 400,
-//                 msg: err
-//             })
-//         } else {
-//             let totalHour = 0
-//             let totalPrice = 0
-//             await result.map(element => {
-//                 // console.log(totalPrice, "totalPrice");
-//                 totalHour += element.feature_base_hrs
-//                 totalPrice = element.temp_cost
-//             });
-//             let installment = 0;
-//             let changeDecimal = 0
+exports.i2p_templates = (req, res) => {
+    let id = req.body.temp_id;
+    let feature_id = req.body.features_ids
+    let platformId = req.body.plateform_ids
+    let couponCode = req.body.coupon_code
+    let client_id = req.body.client_id
+    let currency_id = req.body.currency_id
+    console.log(req.body, "query");
+    const query = `SELECT *
+    FROM i2p_templates 
+    INNER JOIN template_features ON i2p_templates.temp_id = template_features.tf_template_id
+    INNER JOIN features ON template_features.tf_feature_id = features.feature_id
+    where temp_id=${id}`;
+    let featureCheck = false
+    let platformCheck = false
+    let respObj = { temp_id: id }
+    db.query(query, async function (err, result) {
+        if (err) {
+            res.json({
+                code: 400,
+                msg: err
+            })
+        } else {
+            let totalHour = 0
+            let totalPrice = 0
+            await result.map(element => {
+                // console.log(totalPrice, "totalPrice");
+                totalHour += element.feature_base_hrs
+                totalPrice = element.temp_cost
+            });
+            let installment = 0;
+            let changeDecimal = 0
 
-//             let data = totalHour / 40
-//             changeDecimal = parseInt(data) + 2;
-//             console.log(totalHour, data, changeDecimal);
-//             installment = totalPrice / changeDecimal;
-//             respObj.totalHour = totalHour
-//             respObj.installment = installment
-//             respObj.totalPrice = totalPrice
-//             respObj.totalWeek = changeDecimal
-//             respObj.feature_id = feature_id
-//             respObj.platform_id = platformId
-//             if (feature_id && platformId.length > 1) {
-//                 console.log("if condition");
-//                 featureCheck = true
-//                 platformCheck = true
-//                 await featureData(id, feature_id, async (detaResp) => {
+            let data = totalHour / 40
+            changeDecimal = parseInt(data) + 2;
+            console.log(totalHour, data, changeDecimal);
+            installment = totalPrice / changeDecimal;
+            respObj.totalHour = totalHour
+            respObj.installment = installment
+            respObj.totalPrice = totalPrice
+            respObj.totalWeek = changeDecimal
+            respObj.feature_id = feature_id
+            respObj.platform_id = platformId
+            if (feature_id && platformId.length > 1) {
+                console.log("if condition");
+                featureCheck = true
+                platformCheck = true
+                await featureData(id, feature_id, async (detaResp) => {
                     
-//                     if (detaResp) {
+                    if (detaResp) {
                         
-//                         await PlateformData(platformId, id, feature_id, totalHour, totalPrice, changeDecimal, async (platResp) => {
-//                             if (platResp) {
+                        await PlateformData(platformId, id, feature_id, totalHour, totalPrice, changeDecimal, async (platResp) => {
+                            if (platResp) {
                                 
-//                                 respObj.totalHour = detaResp.totalHour + platResp.totalHour
-//                                 respObj.totalPrice = detaResp.totalPrice + platResp.totalPrice
-//                                 respObj.totalWeek = detaResp.totalWeek + platResp.totalWeek
-//                                 respObj.installment = detaResp.totalPrice / detaResp.totalWeek
+                                respObj.totalHour = detaResp.totalHour + platResp.totalHour
+                                respObj.totalPrice = detaResp.totalPrice + platResp.totalPrice
+                                respObj.totalWeek = detaResp.totalWeek + platResp.totalWeek
+                                respObj.installment = detaResp.totalPrice / detaResp.totalWeek
 
-//                             } else {
-//                                 respObj.feature_id = feature_id
-//                                 respObj.totalHour = detaResp.totalHour + totalHour
-//                                 respObj.installment = detaResp.installment + installment
-//                                 respObj.totalPrice = detaResp.totalPrice + totalPrice
-//                                 respObj.totalWeek = detaResp.totalWeek + changeDecimal
+                            } else {
+                                respObj.feature_id = feature_id
+                                respObj.totalHour = detaResp.totalHour + totalHour
+                                respObj.installment = detaResp.installment + installment
+                                respObj.totalPrice = detaResp.totalPrice + totalPrice
+                                respObj.totalWeek = detaResp.totalWeek + changeDecimal
 
-//                             }
-//                         })
-//                     } else {
-//                         return res.json({ code: 400, msg: "something went wrong!" })
-//                     }
-//                 })
+                            }
+                        })
+                    } else {
+                        return res.json({ code: 400, msg: "something went wrong!" })
+                    }
+                })
 
-//             }
+            }
 
-//             if (feature_id && !featureCheck) {
-//                 console.log("only feature");
-//                 await featureData(id, feature_id, async (detaResp) => {
-//                     if (detaResp) {
-//                         respObj.feature_id = feature_id
-//                         respObj.totalHour = detaResp.totalHour + respObj.totalHour
-//                         respObj.installment = detaResp.installment + respObj.installment
-//                         respObj.totalPrice = detaResp.totalPrice + respObj.totalPrice
-//                         respObj.totalWeek = detaResp.totalWeek + respObj.totalWeek
-//                         // console.log(respObj, "respObj");
-//                         // res.json(
-//                         //     respObj
-//                         // )
-//                     } else {
-//                         return res.json({ code: 400, msg: "something went wrong!" })
-//                     }
-//                 })
-//             } if (platformId.length > 1 && !platformCheck) {
-//                 await PlateformData(platformId, id, feature_id, respObj.totalHour, respObj.totalPrice, respObj.totalWeek, async (platResp) => {
-//                     if (platResp) {
-//                         // console.log(platResp, "platResp");
-//                         respObj.platform_id = platformId
-//                         respObj.totalPrice = platResp.totalPrice
-//                         respObj.totalHour = platResp.totalHour
-//                         respObj.totalWeek = platResp.totalWeek
-//                         respObj.installment = platResp.installment
+            if (feature_id && !featureCheck) {
+                console.log("only feature");
+                await featureData(id, feature_id, async (detaResp) => {
+                    if (detaResp) {
+                        respObj.feature_id = feature_id
+                        respObj.totalHour = detaResp.totalHour + respObj.totalHour
+                        respObj.installment = detaResp.installment + respObj.installment
+                        respObj.totalPrice = detaResp.totalPrice + respObj.totalPrice
+                        respObj.totalWeek = detaResp.totalWeek + respObj.totalWeek
+                        // console.log(respObj, "respObj");
+                        // res.json(
+                        //     respObj
+                        // )
+                    } else {
+                        return res.json({ code: 400, msg: "something went wrong!" })
+                    }
+                })
+            } if (platformId.length > 1 && !platformCheck) {
+                await PlateformData(platformId, id, feature_id, respObj.totalHour, respObj.totalPrice, respObj.totalWeek, async (platResp) => {
+                    if (platResp) {
+                        // console.log(platResp, "platResp");
+                        respObj.platform_id = platformId
+                        respObj.totalPrice = platResp.totalPrice
+                        respObj.totalHour = platResp.totalHour
+                        respObj.totalWeek = platResp.totalWeek
+                        respObj.installment = platResp.installment
 
-//                     } else {
-//                         return res.json({ code: 400, msg: "something went wrong!" })
-//                     }
-//                 })
-//             }
-//             if (couponCode) {
-//                 return addCouponCode(res, couponCode, feature_id, platformId, client_id, currency_id, id, respObj.totalPrice, respObj.totalHour, respObj.totalWeek);
-//             }
-//             res.json(
-//                 respObj
-//             )
+                    } else {
+                        return res.json({ code: 400, msg: "something went wrong!" })
+                    }
+                })
+            }
+            if (couponCode) {
+                return addCouponCode(res, couponCode, feature_id, platformId, client_id, currency_id, id, respObj.totalPrice, respObj.totalHour, respObj.totalWeek);
+            }
+            res.json(
+                respObj
+            )
 
-//         }
-//     });
-// }
+        }
+    });
+}
 
 
 
